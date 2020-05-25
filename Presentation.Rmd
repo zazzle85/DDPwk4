@@ -1,0 +1,59 @@
+---
+title: "Find the MPG for Selected Car"
+author: "Jae"
+date: "5/24/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+library(plotly)
+```
+
+## Wht does this application do?
+
+It uses the mtcars data and finds the MPG for the car selected.
+
+
+## Let's look at the cars
+
+```{r cars, echo = TRUE, message=FALSE}
+plot_ly(data=mtcars,x=~rownames(mtcars),y=~mpg)
+```
+
+
+## Here is what went into the UI
+```{r UI, echo = TRUE, eval=FALSE}
+library(shiny)
+  data(mtcars)
+  shinyUI(fluidPage(
+    titlePanel("MPG for Cars"),
+    sidebarLayout(
+        sidebarPanel(
+            selectInput(
+                'e0', 'Select a car', choices = rownames(mtcars),
+                selectize = FALSE
+            ),
+            submitButton('Submit')
+        ),
+        mainPanel(
+            h3('Results of selection'), 
+            h4('You entered'), 
+            verbatimTextOutput("inputValue"), 
+            h4('MPG for the selected car is '), 
+            verbatimTextOutput("MPG")
+        )
+    )
+))
+```
+
+
+## Here is what went into the server
+```{r Server, echo = TRUE, eval=FALSE}
+CarMPG<- function(e0) mtcars[c(e0),1]
+shinyServer(
+    function(input, output) {
+       output$inputValue<-renderPrint({input$e0})
+        output$MPG<- renderPrint({CarMPG(input$e0)})
+    })
+    
+```
